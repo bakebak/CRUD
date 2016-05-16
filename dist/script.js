@@ -4,6 +4,7 @@ var mensagens = {
 	deletada: "Fruta apagada!",
 	comandoId: "Digite um ID para apagar!",
 	alertaCampo: "Preencha todos os campos para adicionar uma nova fruta!",
+	alertaCampoTamanho: "Nome da Fruta deve conter no mínimo três caracteres"
 }
 
 $(document).keypress(function(e) {
@@ -69,7 +70,6 @@ function pesquisarNome(entrada){
 
 function pesquisar(){
 	var entrada = $("#numero").val();
-	console.log(entrada);
 		if (entrada !== ""){
 			chamaIndividual(entrada);
 			ocultarAdicionar ();
@@ -133,7 +133,6 @@ function ajax (tipo,link){
 }
 
 function editar(){
-	entrada = $("#numero").val();
 	if($("#nome").val() !== '' && $("#valor").val() !== '' && $("#estoque").val() !== ''){
 		ajax('PUT',host.urlProduct + entrada);
 	}
@@ -143,15 +142,21 @@ function editar(){
 }
 
 function adicionar(){
-	valor = $("#valor").val();
-	if($("#nome").val() !== '' && valor !== '' && $("#estoque").val() !== ''){
-		ajax('POST',host.urlProduct);
+	nomeTamanho = $("#nome").val();
+	
+	if(nomeTamanho !== '' && $("#valor").val() !== '' && $("#estoque").val() !== ''){
+		if (nomeTamanho.length > 3){
+			ajax('POST',host.urlProduct);
+		}
+		else {
+			alert(mensagens.alertaCampoTamanho);
+		}
 	}
+
 	else{
 		alert(mensagens.alertaCampo);
 	}
 }
-
 
 function testeNegativo(){
 	$("input").keyup(function(e){
@@ -176,6 +181,7 @@ function testeNumero(){
 		$(this).val(valor.replace(/[^0-9.]+/g,''));
 	});
 }
+
 
 function mostrarPesquisar(){
 	$("#editar").show();
@@ -221,6 +227,7 @@ function inicia(){
 	$("#deletar").hide();
 	$("#barraId").show();
 }
+
 
 $(document).ready(function(){
 	inicia();
