@@ -34,7 +34,6 @@ function escrevendoSaida(data){
 
 function chamaIndividual(entrada){
 	valor = isNaN(entrada);
-	
 	if (valor == false){
 		pesquisarNumero(entrada);
 	}
@@ -51,26 +50,35 @@ function pesquisarNumero(entrada){
 		escrevendoSaida(data);
 	})
 	
-	.fail(function() {
+	/*.fail(function() {
 		$("#dados").html(mensagens.disponibilidade);
-	})
+	})*/
 }
 
 function pesquisarNome(entrada){
 	var entradaMinuscula = entrada.toLowerCase();
 	$.getJSON(host.urlProduct + "?nome="+entradaMinuscula, function (data){ //.getJSON faz uma requisição e o que retornar ele transforma em JSON
-	escrevendoSaida(data[0]);
+		escrevendoSaida(data[0]);
 	})
 	
-	.fail(function() {
+	/*.fail(function() {
 		$("#dados").html(mensagens.disponibilidade);
-	})
+	})*/
 }
+
 
 function pesquisar(){
 	var entrada = $("#numero").val();
-		chamaIndividual(entrada);
-		ocultarAdicionar ();
+	console.log(entrada);
+		if (entrada !== ""){
+			chamaIndividual(entrada);
+			ocultarAdicionar ();
+		}
+		
+		else if (entrada == "") {
+			$("#dados").html(mensagens.disponibilidade);	
+			ocultarNaoDisponivel();
+		}
 		$("#dados").show();
 }
 
@@ -81,6 +89,7 @@ function mensagemDeletar(){
 	}
 	else{
 		$("#dados").html(mensagens.comandoId);
+		$("#dados").show();
 	}
 }
 
@@ -143,13 +152,6 @@ function adicionar(){
 	}
 }
 
-/*function testeNegativo(){
-	$("#valor").keydown(function(e) {
-		if (e.which == 109 || e.keyCode == 109) {
-			alert("ola");
-		}
-	});
-}*/
 
 function testeNegativo(){
 	$("input").keyup(function(e){
@@ -178,6 +180,11 @@ function testeNumero(){
 function mostrarPesquisar(){
 	$("#editar").show();
 	$("#deletar").show();	
+}
+
+function ocultarNaoDisponivel(){
+	$("#editar").hide();
+	$("#deletar").hide();
 }
 
 function mostrarEditar(){
