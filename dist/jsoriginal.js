@@ -1,16 +1,20 @@
-var host = {urlProduct:"http://localhost:3000/product"};
-var mensagens = {
-	disponibilidade:"Fruta não disponível!",
-	deletada: "Fruta apagada!",
-	comandoId: "Digite um ID para apagar!",
-	alertaCampo: "Preencha todos os campos para adicionar uma nova fruta!",
-}
-
-$(document).keypress(function(e) {
-	if (e.which == 13) {
-		pesquisar();
-	}
-});
+Skip to content
+This repository
+Search
+Pull requests
+Issues
+Gist
+ @luantoni
+ Watch 1
+  Star 0
+ Fork 4 bakebak/CRUD
+ Code  Issues 11  Pull requests 1  Wiki  Pulse  Graphs
+Branch: master Find file Copy pathCRUD/dist/script.js
+cf86f44  3 days ago
+@bakebak bakebak remoção do link
+1 contributor
+RawBlameHistory     167 lines (152 sloc)  3.42 KB
+var host = {urlProduct:"http://localhost:3000/product/"};
 
 function chamaLista(){
 	$.getJSON(host.urlProduct, function (list){
@@ -33,37 +37,13 @@ function escrevendoSaida(data){
 }
 
 function chamaIndividual(entrada){
-	valor = isNaN(entrada);
-	
-	if (valor == false){
-		pesquisarNumero(entrada);
-	}
-	
-	else if (valor == true){
-		pesquisarNome(entrada);
-	}
-	
-	mostrarPesquisar();
-}
-
-function pesquisarNumero(entrada){
-	$.getJSON(host.urlProduct + "/"+entrada, function (data){ //.getJSON faz uma requisição e o que retornar ele transforma em JSON
+	$.getJSON(host.urlProduct + entrada, function (data){ //.getJSON faz uma requisição e o que retornar ele transforma em JSON
 		escrevendoSaida(data);
+		$("#editar").show();
+		$("#deletar").show();
 	})
-	
 	.fail(function() {
-		$("#dados").html(mensagens.disponibilidade);
-	})
-}
-
-function pesquisarNome(entrada){
-	var entradaMinuscula = entrada.toLowerCase();
-	$.getJSON(host.urlProduct + "?nome="+entradaMinuscula, function (data){ //.getJSON faz uma requisição e o que retornar ele transforma em JSON
-	escrevendoSaida(data[0]);
-	})
-	
-	.fail(function() {
-		$("#dados").html(mensagens.disponibilidade);
+	    $("#dados").html('Fruta não disponível!');
 	})
 }
 
@@ -77,10 +57,10 @@ function pesquisar(){
 function mensagemDeletar(){
 	var entrada = $("#numero").val();
 	if (entrada !=''){
-		$("#dados").html(mensagens.deletada);
+		$("#dados").html('Fruta apagada!');
 	}
 	else{
-		$("#dados").html(mensagens.comandoId);
+		$("#dados").html('Digite um ID para apagar!');
 	}
 }
 
@@ -129,55 +109,17 @@ function editar(){
 		ajax('PUT',host.urlProduct + entrada);
 	}
 	else{
-		alert(mensagens.alertaCampo);
+		alert("Preencha todos os campos para adicionar uma nova fruta!");
 	}
 }
 
 function adicionar(){
-	valor = $("#valor").val();
-	if($("#nome").val() !== '' && valor !== '' && $("#estoque").val() !== ''){
+	if($("#nome").val() !== '' && $("#valor").val() !== '' && $("#estoque").val() !== ''){
 		ajax('POST',host.urlProduct);
 	}
 	else{
-		alert(mensagens.alertaCampo);
+		alert("Preencha todos os campos para adicionar uma nova fruta!");
 	}
-}
-
-/*function testeNegativo(){
-	$("#valor").keydown(function(e) {
-		if (e.which == 109 || e.keyCode == 109) {
-			alert("ola");
-		}
-	});
-}*/
-
-function testeNegativo(){
-	$("input").keyup(function(e){
-		var code = e.keyCode || e.wich;
-		if (code == 109 || code == 189){
-			var valor = $(this).val();
-			$(this).val(valor.replace(/[-]/g,''))
-		}
-	});
-}
-
-function testeLetra(){
-	$("#nome").keyup(function(){
-		var letras = $(this).val();
-		$(this).val(letras.replace(/[^a-zA-Záàâãéèêíïóôõöúçñ ]+/g,''));
-	});
-}
-
-function testeNumero(){
-	$("#valor, #estoque").keyup(function(){
-		var valor = $(this).val();
-		$(this).val(valor.replace(/[^0-9.]+/g,''));
-	});
-}
-
-function mostrarPesquisar(){
-	$("#editar").show();
-	$("#deletar").show();	
 }
 
 function mostrarEditar(){
@@ -217,10 +159,6 @@ function inicia(){
 
 $(document).ready(function(){
 	inicia();
-	testeNegativo();
-	testeLetra();
-	testeNumero();
-	
 	$("#atualizar").click(function(){
 		chamaLista();
 	});
@@ -243,3 +181,5 @@ $(document).ready(function(){
 		editar();
 	});
 }); 
+Status API Training Shop Blog About
+© 2016 GitHub, Inc. Terms Privacy Security Contact Help
