@@ -4,7 +4,8 @@ var mensagens = {
 	deletada: "Fruta apagada!",
 	comandoId: "Digite um ID para apagar!",
 	alertaCampo: "Preencha todos os campos para adicionar uma nova fruta!",
-	alertaCampoTamanho: "Nome da Fruta deve conter no mínimo três caracteres"
+	alertaCampoTamanho: "Nome da Fruta deve conter no mínimo três caracteres",
+	confirmar: "Você tem certeza?"
 }
 
 $(document).keypress(function(e) {
@@ -97,29 +98,29 @@ function deletar(){
 	var entrada = $("#numero").val();
 	$.ajax({
 	    type: 'DELETE',
-	    url: host.urlProduct + entrada,
+	    url: host.urlProduct + "/"+entrada,
 	    success: function(){
-	    	chamaLista();
+			confirmar();
+			mensagemDeletar();
 	    }
 	});
 	ocultarAdicionar ();
 	$("#dados").show();
-	mensagemDeletar();
 	$("#editar").hide();
 	$("#deletar").hide();
 	$("#barraId").show();
 }
 
-function ajax (tipo,link){
+function ajax (tipo,parametro){
 	var nome = $("#nome").val();
 		valor = $("#valor").val();
 		estoque = $("#estoque").val();
 		status = $('input[name=marcaStatus]:checked').val();
-
-	nome = nome.toLowerCase();
+		nome = nome.toLowerCase();
+		
 	$.ajax({
 		type: tipo,
-		url: link,
+		url: parametro,
 		data: {
 			nome: nome,
 			valor: valor,
@@ -133,8 +134,10 @@ function ajax (tipo,link){
 }
 
 function editar(){
+	entrada = $("#numero").val();
 	if($("#nome").val() !== '' && $("#valor").val() !== '' && $("#estoque").val() !== ''){
-		ajax('PUT',host.urlProduct + entrada);
+		ajax('PUT',host.urlProduct + "/" + entrada);
+		confirmar();
 	}
 	else{
 		alert(mensagens.alertaCampo);
@@ -142,11 +145,12 @@ function editar(){
 }
 
 function adicionar(){
-	nomeTamanho = $("#nome").val();
-	
-	if(nomeTamanho !== '' && $("#valor").val() !== '' && $("#estoque").val() !== ''){
-		if (nomeTamanho.length > 3){
+	var entrada = $("#numero").val();
+	var nomeTamanho = $("#nome").val();
+	if(nomeTamanho !== '' && $("#valor") !== '' && $("#estoque").val() !== ''){
+		if (nomeTamanho.length > 2){
 			ajax('POST',host.urlProduct);
+			confirmar();
 		}
 		else {
 			alert(mensagens.alertaCampoTamanho);
@@ -182,6 +186,10 @@ function testeNumero(){
 	});
 }
 
+function confirmar(){
+	confirm(mensagens.confirmar);
+	chamaLista();
+}
 
 function mostrarPesquisar(){
 	$("#editar").show();
@@ -235,6 +243,9 @@ $(document).ready(function(){
 	testeLetra();
 	testeNumero();
 	
+	
+	$("#valor").maskMoney({showSymbol:true, symbol:"", decimal:".", thousands:","});
+
 	$("#atualizar").click(function(){
 		chamaLista();
 	});
