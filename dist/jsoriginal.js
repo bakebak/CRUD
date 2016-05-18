@@ -69,6 +69,7 @@ function deletar(){
 	$.ajax({
 	    type: 'DELETE',
 	    url: host.urlProduct + entrada,
+		async : false,
 	    success: function(){
 	    	chamaLista();
 	    }
@@ -91,6 +92,7 @@ function ajax (tipo,link){
 	$.ajax({
 		type: tipo,
 		url: link,
+		async : false,
 		data: {
 			nome: nome,
 			valor: valor,
