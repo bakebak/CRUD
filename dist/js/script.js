@@ -24,20 +24,21 @@ $(document).ready(function(){
 	$("#botao").click(function(){
 		pesquisar();
 	});
-	$("#deletar").click(function(){
-		deletar();
+	$("#home").click(function(){
+		inicia();
+
 	});
 	$("#adicionarFruta").click(function(){
 		mostrarAdicionar();
 	});
-	$("#adicionar").click(function(){
-		adicionar();
+	$("#adicionar").click(function(event){
+		adicionar(event);
 	});
 	$("#editar").click(function(){
 		mostrarEditar();
 	});
-	$("#edit").click(function(){
-		editar();
+	$("#edit").click(function(event){
+		editar(event);
 	});
 }); 
 
@@ -48,8 +49,8 @@ $(document).keypress(function(e) {
 });
 function inicia(){
 	/*chamaLista();*/
-	esconde(['#dados','#novaFruta','#editar','#deletar']);
-	mostra(['#barraId']);
+	esconde(['#dados','#novaFruta','#editar','#deletar','#home']);
+	mostra(['#barraId','#botao','#adicionarFruta']);
 }
 
 function chamaLista(){
@@ -75,8 +76,8 @@ function chamaLista(){
 	
 	
 	.fail(function() {
-		alert(mensagens.errorServer);
-		debugger;
+		confirm(mensagens.errorServer)
+		//debugger;
 		chamaLista();
 	})
 }
@@ -105,10 +106,16 @@ function pesquisarNumero(entrada){
 	$.getJSON(host.urlProduct + "/"+entrada, function (data){ //.getJSON faz uma requisição e o que retornar ele transforma em JSON
 		escrevendoSaida(data);
 		mostrarPesquisar();
+		$("#deletar").click(function(){
+			if(confirm(mensagens.confirmar)){
+				deletar(data);
+			}
+		});
 	})
 	
 	.fail(function() {
-		funcaoError();
+		$("#dados").html(mensagens.disponibilidade);
+		ocultarNaoDisponivel();
 	})
 }
 
@@ -119,16 +126,18 @@ function pesquisarNome(entrada){
 		if (data.length != 0){
 			escrevendoSaida(data[0]);
 			mostrarPesquisar();
+			$("#deletar").click(function(){
+				if(confirm(mensagens.confirmar)){
+					deletar(data[0]);
+				}
+			});
 		}
+
 		else {
-			funcaoError();
+			$("#dados").html(mensagens.disponibilidade);
+			ocultarNaoDisponivel();
 		}
 	})
-}
-
-function funcaoError(){
-	$("#dados").html(mensagens.disponibilidade);
-	ocultarNaoDisponivel();
 }
 
 
@@ -157,14 +166,15 @@ function mensagemDeletar(){
 	}
 }
 
-function deletar(){
-	var entrada = $("#numero").val();
+function deletar(data){
+	mostrarPesquisar();
+	var teste = data.id;
 	$.ajax({
 	    type: 'DELETE',
-	    url: host.urlProduct + "/"+entrada,
+	    url: host.urlProduct + "/"+teste,
 	    success: function(){
-			confirmar();
-			mensagemDeletar();
+				mensagemDeletar();
+				chamaLista();
 	    }
 	});
 	ocultarAdicionar ();
@@ -173,6 +183,8 @@ function deletar(){
 	$("#deletar").hide();
 	$("#barraId").show();
 }
+
+
 
 function ajax (tipo,parametro){
 	var nome = $("#nome").val();
@@ -199,34 +211,40 @@ function ajax (tipo,parametro){
 function editar(){
 	entrada = $("#numero").val();
 	if($("#nome").val() !== '' && $("#valor").val() !== '' && $("#estoque").val() !== ''){
-		ajax('PUT',host.urlProduct + "/" + entrada);
-		confirmar();
+		if(confirm(mensagens.confirmar)){
+			ajax('PUT',host.urlProduct + "/" + entrada);
+			limpa();
+		}
+		event.preventDefault();
 	}
 	else{
 		alert(mensagens.alertaCampo);
+		event.preventDefault();
 	}
 }
 
-function adicionar(){
+function adicionar(event){
 	var entrada = $("#numero").val();
 	var nomeTamanho = $("#nome").val();
 	if(nomeTamanho !== '' && $("#valor") !== '' && $("#estoque").val() !== ''){
 		if (nomeTamanho.length > 2){
-			ajax('POST',host.urlProduct);
-			confirmar();
+			if(confirm(mensagens.confirmar)){
+				ajax('POST',host.urlProduct);
+				limpa();
+			}
+			event.preventDefault();
 		}
 		else {
 			alert(mensagens.alertaCampoTamanho);
-			window.location.notreload();
+			event.preventDefault();
 		}
 	}
 
 	else{
 		alert(mensagens.alertaCampo);
-		window.location.notreload();
+		event.preventDefault();
 	}
 }
-
 function testeNegativo(){
 	$("input").keyup(function(e){
 		var code = e.keyCode || e.wich;
@@ -251,11 +269,6 @@ function testeNumero(){
 	});
 }
 
-function confirmar(){
-	confirm(mensagens.confirmar);
-	/*chamaLista();*/
-}
-
 function mostrarPesquisar(){
 	mostra(['#editar','#deletar']);
 }
@@ -265,12 +278,12 @@ function ocultarNaoDisponivel(){
 
 function mostrarEditar(){
 	esconde(['#dados','#adicionar','#editar','#deletar']);
-	mostra(['#novaFruta','#edit','#barraId']);
+	mostra(['#novaFruta','#edit','#barraId','#home']);
 }
 
 function mostrarAdicionar(){
 	esconde(['#dados','#edit','#editar','#deletar','#botao','#barraId','#adicionarFruta']);
-	mostra(['#novaFruta','#adicionar']);
+	mostra(['#novaFruta','#adicionar','#home']);
 }
 
 function ocultarAdicionar(){
@@ -287,6 +300,10 @@ function mostra (array){
 	for (var x=0; x<array.length; x++){
 		$(array[x]).show();
 	}
+}
+
+function limpa(){
+	$('.caixa').val('');
 }
 
 
